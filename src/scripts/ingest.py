@@ -11,8 +11,6 @@ load_dotenv()
 EIA_API_KEY = os.getenv("EIA_API_KEY")
 BASE_DIR = Path(__file__).parent.parent
 
-
-
 def fetch_bulk():
     
     offset = 5000; 
