@@ -9,7 +9,7 @@ from pathlib import Path
 load_dotenv()
 
 EIA_API_KEY = os.getenv("EIA_API_KEY")
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 
 def fetch_bulk():
     
@@ -17,20 +17,20 @@ def fetch_bulk():
     total = 0
     total_response = {}
     
-    url = f'https://api.eia.gov/v2/electricity/rto/region-data/data/?api_key={EIA_API_KEY}&frequency=hourly&data[0]=value&facets[respondent][]=ERCO&facets[type][]=D&start=2024-05-30T00&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
+    url = f'https://api.eia.gov/v2/electricity/rto/region-data/data/?api_key={EIA_API_KEY}&frequency=hourly&data[0]=value&facets[respondent][]=ERCO&facets[type][]=D&start=2019-01-01T00&sort[0][column]=period&sort[0][direction]=asc&offset=0&length=5000'
     try: 
         request = requests.get(url=url)
         response = request.json()
-    except :
-        print("Error")
-        return
+    except Exception as e:
+        print("Error",e)
+        raise
 
     total = int(response['response']['total'])
     total_response = response['response']['data']
     
 
     while offset < total:
-        url = f'https://api.eia.gov/v2/electricity/rto/region-data/data/?api_key={EIA_API_KEY}&frequency=hourly&data[0]=value&facets[respondent][]=ERCO&facets[type][]=D&start=2024-05-30T00&sort[0][column]=period&sort[0][direction]=desc&offset={offset}&length=5000'
+        url = f'https://api.eia.gov/v2/electricity/rto/region-data/data/?api_key={EIA_API_KEY}&frequency=hourly&data[0]=value&facets[respondent][]=ERCO&facets[type][]=D&start=2019-01-01T00&sort[0][column]=period&sort[0][direction]=asc&offset={offset}&length=5000'
         try: 
             request = requests.get(url=url)
             response = request.json()
@@ -44,6 +44,8 @@ def fetch_bulk():
         total_response += data
 
         offset+=5000
+
+        print(f"Fetched offset {offset} of {total}")
         
     return total_response
 
@@ -52,7 +54,7 @@ bulk_data = fetch_bulk()
 
 df = pd.DataFrame(bulk_data)
 filtered_df = df[['period', 'value']]
-filtered_df.to_csv(BASE_DIR/"data/raw/ercot_backfill.csv", index=False)
+filtered_df.to_csv(BASE_DIR/"data/raw/ercot_demand.csv", index=False)
 
 #Test, this is from nano 
 

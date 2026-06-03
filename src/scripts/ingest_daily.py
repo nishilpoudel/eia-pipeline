@@ -1,7 +1,6 @@
 
-# Status : API call works 
-# To-do : Refactor ingest to sort decreasing, add error handling on both scripts, 
-# Create cron job to run every 24 hours. 
+# Status : API call works, Refactor ingest to sort decending, add error handling on both scripts,
+# To-do : Create cron job to run every 24 hours. 
 
 
 import requests
@@ -12,6 +11,7 @@ from pathlib import Path
 from datetime import datetime
 from datetime import timedelta
 import pandas as pd 
+from collections import deque
 
 load_dotenv() 
 
@@ -25,8 +25,9 @@ FILE_PATH = BASE_DIR/"data/raw/ercot_demand.csv"
 with open(FILE_PATH, mode="r", newline="") as f:
     reader = csv.reader(f)
     next(reader, None)
-    previous_time_stamp = next(reader, None)[0]
-
+    # deque(d.append(next(reader))) all in one line 
+    last_row = deque(reader, maxlen=1)
+    previous_time_stamp = last_row[0][0]
 
 format_pattern="%Y-%m-%dT%H"
 dt_object = datetime.strptime(previous_time_stamp, format_pattern)
@@ -36,7 +37,7 @@ time_stamp = updated_timestamp.strftime(format_pattern)
 
 
 def fetch_data():
-    url = f"https://api.eia.gov/v2/electricity/rto/region-data/data/?api_key={EIA_API_KEY}&frequency=hourly&data[0]=value&facets[respondent][]=ERCO&facets[type][]=D&start={time_stamp}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000"
+    url = f"https://api.eia.gov/v2/electricity/rto/region-data/data/?api_key={EIA_API_KEY}&frequency=hourly&data[0]=value&facets[respondent][]=ERCO&facets[type][]=D&start={time_stamp}&sort[0][column]=period&sort[0][direction]=asc&offset=0&length=5000"
 
     try:
         request = requests.get(url=url)
@@ -44,17 +45,16 @@ def fetch_data():
         return response
     except Exception as e:
         print(e)
-        return
+        raise RuntimeError(f"Failed API call: {e}") from e
     
-
 data = fetch_data()
-
 
 filtered_data = data['response']['data']
 
 df = pd.DataFrame(filtered_data)
 filtered_df = df[['period','value']]
-print(filtered_df)
+filtered_df.to_csv(FILE_PATH, mode="a", index=False, header=False)
+
 
 
         
