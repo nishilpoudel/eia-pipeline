@@ -1,7 +1,6 @@
 
-# Status : API call works, Refactor ingest to sort decending, add error handling on both scripts,
-# To-do : Create cron job to run every 24 hours. 
-
+# Status : Created cron job to run every 24 hours. 
+# TO-DO : Set up more robust error handling
 
 import requests
 import os
