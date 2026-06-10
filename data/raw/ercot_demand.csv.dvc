@@ -1,5 +1,5 @@
 outs:
-- md5: 6cd92c149865adbaf6b6f3e3d085a053
-  size: 1303793
+- md5: 17a861085da77a741b31edf6c6c1791b
+  size: 1304273
   hash: md5
   path: ercot_demand.csv
