@@ -14,24 +14,20 @@ logger = logging.getLogger()
 logger.setLevel("INFO")
 
 
-def publish_to_sns(topic_arn, message, subject):
+def publish_to_sns(topic_arn, message):
     response = sns_client.publish(
         TopicArn = topic_arn,
         Message = message,
-        Subject = subject 
-        )
-    logger.info(f"SNS Publish Success, MessageId {response['MessageId']}")
+        Subject = "Report from S3"
+    )
+
 
 def lambda_handler(event, context):
     topic_arn = os.environ.get("SNS_TOPIC_ARN")
-    if not topic_arn:
-        raise ValueError("SNS_TOPIC_ARN environment value is not set!")
     
     try:
         bucket_name = event["Records"][0]["s3"]["bucket"]["name"]
         object_key = event["Records"][0]["s3"]["object"]["key"]
-        logger.info(f"Triggered by s3://{bucket_name}/{object_key}")
-
         response = s3_client.get_object(Bucket = bucket_name, Key = object_key)
 
         data = json.loads(response["Body"].read())
@@ -42,19 +38,18 @@ def lambda_handler(event, context):
         last_new_timestamp = data['last_new_timestamp']
 
         if rows_added > 0:
-            logger.info(f"Ingest Successful: {rows_added} rows added for {ingest_date}")
-            body = f"The report for {ingest_date} was a success. Number of rows added is {rows_added} from the range of {first_new_timestamp} to {last_new_timestamp}."
-            publish_to_sns(topic_arn, body, f"Ercot Pipeline - Success {ingest_date}")
+            body = f"The report for {ingest_date} was a success. Number of rows aded is {rows_added} from the range of {first_new_timestamp} to {last_new_timestamp}."
+            publish_to_sns(topic_arn, body)
         else:
-            logger.error("There were no rows updated")
+            logger.error(f"There were no rows updated")
             body = "No rows were updated. Further troubleshooting is required."
-            publish_to_sns(topic_arn, body, "Ercot Pipeline - Failure. No rows added")
+            publish_to_sns(topic_arn, body)
 
 
     except Exception as e:
-        logger.error(f"Pipeline failed: {str(e)}")
         body = "Error. Further troubleshooting is required."
-        publish_to_sns(topic_arn, body, f"Ercot Pipeline - Error")
+        publish_to_sns(topic_arn, body)
+        logger.error(f"Error uploading meta data {str(e)}")
         raise
 
 
