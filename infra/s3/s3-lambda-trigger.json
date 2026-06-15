@@ -1,0 +1,21 @@
+{ 
+"LambdaFunctionConfigurations": [
+
+{
+    "Id": "Invoke-Lambda-Function",
+    "LambdaFunctionArn" : "arn:aws:lambda:us-east-1:626963115091:function:eia-pipeline-validator",
+    "Events":["s3:ObjectCreated:Put"],
+    "Filter":{
+    "Key":{
+      "FilterRules":[
+        {
+          "Name":"prefix",
+	  "Value":"metadata/"
+
+           }
+         ]
+       }
+     }
+   }
+ ]
+}

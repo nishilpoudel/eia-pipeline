@@ -1,0 +1,16 @@
+{
+    "Rules":[
+        {
+            "ID":"Metadata-deletion-lifecycle-policy",
+	    "Status":"Enabled",
+	    "Filter":{
+		"Prefix":"metadata/"
+
+	   },
+     	   "Expiration": {
+                "Days":30
+
+     }
+   }
+ ]
+}

@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 *.swp
 .vscode/
+src/aws_scripts/function.zip
