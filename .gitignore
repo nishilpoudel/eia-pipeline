@@ -5,4 +5,5 @@ __pycache__/
 *.pyc
 *.swp
 .vscode/
-src/aws_scripts/function.zip
+src/lambda/function.zip
+≈
