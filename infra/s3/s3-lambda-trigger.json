@@ -3,7 +3,7 @@
 
 {
     "Id": "Invoke-Lambda-Function",
-    "LambdaFunctionArn" : "arn:aws:lambda:us-east-1:626963115091:function:eia-pipeline-validator",
+    "LambdaFunctionArn" : "arn:aws:lambda:us-east-1:YOUR_ACCOUNT_NUMBER:function:eia-pipeline-validator",
     "Events":["s3:ObjectCreated:Put"],
     "Filter":{
     "Key":{
