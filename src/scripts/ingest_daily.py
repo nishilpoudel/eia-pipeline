@@ -1,7 +1,4 @@
 
-# Status : Created cron job to run every 24 hours. 
-# TO-DO : Set up more robust error handling
-
 import requests
 import os
 from dotenv import load_dotenv
@@ -11,12 +8,13 @@ from datetime import datetime, timedelta, timezone
 import pandas as pd 
 from collections import deque
 import sys
+import json
 
 load_dotenv() 
 
 EIA_API_KEY = os.getenv("EIA_API_KEY")
 # Path(__file__) will get you the current file path. 
-# .parent will go one level higher
+# .parent will go one level highe
 BASE_DIR = Path(__file__).parent.parent.parent
 FILE_PATH = BASE_DIR/"data/raw/ercot_demand.csv"
 FORMAT_PATTERN = "%Y-%m-%dT%H"
@@ -45,7 +43,7 @@ def fetch_data(time_stamp):
         response = requests.get(url=url)
         return response.json()
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         raise RuntimeError(f"Failed API call: {e}") from e
     
 
@@ -55,18 +53,32 @@ def process_and_save(data, file_path):
     filtered_data = data['response']['data']
 
     if not filtered_data:
-        print(f"[{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}] No new data available. Exiting!")
+        print(f"[{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}] No new data available. Exiting!", file=sys.stderr)
         sys.exit(0)
     
     df = pd.DataFrame(filtered_data)
     filtered_df = df[['period','value']]
+    rows_added = len(filtered_df['period'])
+    first_timestamp = filtered_df['period'].iloc[0]
+    last_timestamp = filtered_df['period'].iloc[-1]
+
     filtered_df.to_csv(file_path,mode='a',index=False, header=False)
-    print(f"[{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}] Appended {len(filtered_df)} rows!" )
+
+    metadata = {
+    "rows_added": rows_added,
+    "first_new_timestamp": first_timestamp,
+    "last_new_timestamp": last_timestamp
+    }
+
+    print(f"[{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}] Appended {len(filtered_df)} rows!", file= sys.stderr )
+    return metadata
+
 
 def main():
     time_stamp = get_next_timestamp(FILE_PATH)
     data = fetch_data(time_stamp)
-    process_and_save(data, FILE_PATH)
+    metadata = process_and_save(data, FILE_PATH)
+    print(json.dumps(metadata))
     
 
 if __name__ == "__main__":
