@@ -11,8 +11,8 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S UTC')] Pipeline Started"
 
 
 
-/home/nishil/eia-pipeline/venv/bin/python \
-     /home/nishil/eia-pipeline/src/scripts/ingest_daily.py
+METADATA=$(/home/nishil/eia-pipeline/venv/bin/python \
+     /home/nishil/eia-pipeline/src/scripts/ingest_daily.py)
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S UTC')] Ingestion Complete"
 
@@ -33,6 +33,11 @@ if ! git diff --staged --quiet; then
 
     git push origin master
     echo "[$(date '+%Y-%m-%d %H:%M:%S UTC')] Pushed to GitHub"
+
+    INGEST_DATE=$(date -u '+%Y-%m-%d')
+    S3_KEY="metadata/$(date -u '+%Y/%m/%d')/pipeline_report.json"
+    FULL_METADATA=$(echo "$METADATA" | jq --arg date "$INGEST_DATE" '. + {ingest_date: $date}')
+    echo "$FULL_METADATA" | aws s3 cp - "s3://nishil-eia-pipeline/$S3_KEY" --content-type application/json
 
     echo "[$(date '+%Y-%m-%d %H:%M:%S UTC')] Pipeline Complete"
 
