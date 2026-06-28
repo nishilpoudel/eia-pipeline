@@ -12,3 +12,22 @@ Phase 3(Planned)
 FAST API backend and Streamlit for dashboard to display future grid demands. 
 
 
+### Full Demand Time Series
+![Full demand time series](eda_output/1_timeseries.png)
+
+### Hourly Pattern
+![Demand by hour of day](eda_output/2_hourly_pattern.png)
+
+### Daily Pattern
+![Demand by day of week](eda_output/3_daily_pattern.png)
+
+### Monthly Pattern
+![Demand by month](eda_output/4_monthly_pattern.png)
+
+### Demand Distribution
+![Demand value distribution](eda_output/5_distribution.png)
+
+### Year-over-Year Comparison
+![Year over year monthly averages](eda_output/6_yearly_comparison.png)
+
+
