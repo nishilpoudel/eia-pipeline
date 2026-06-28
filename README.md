@@ -4,7 +4,8 @@ This pipeline ingests daily Texas grid demand from the EIA API and  populates a 
 On arrival, the S3 Bucket triggers an AWS Lambda function to observe the daily ingestion metadata and send success/failures health reports to my email via AWS SNS. Everything is triggered automatically every night via cron and shell scripts. 
 
 Phase 2(In Progress) 
-  Train XGboost model to predict future demand. 90 percent of this will also be automated/
+
+Train XGboost model to predict future demand. 90 percent of this will also be automated/
 
 Phase 3(Planned)
 
