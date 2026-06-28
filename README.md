@@ -14,6 +14,9 @@ FAST API backend and Streamlit for dashboard to display future grid demands.
 ### Grid Data from Jan 2019 to June 2026 listed below: 
 
 
+#### Year-over-Year Comparison
+![Year over year monthly averages](eda_output/6_yearly_comparison.png)
+
 #### Full Demand Time Series
 ![Full demand time series](eda_output/1_timeseries.png)
 
@@ -28,8 +31,5 @@ FAST API backend and Streamlit for dashboard to display future grid demands.
 
 #### Demand Distribution
 ![Demand value distribution](eda_output/5_distribution.png)
-
-#### Year-over-Year Comparison
-![Year over year monthly averages](eda_output/6_yearly_comparison.png)
 
 
