@@ -9,7 +9,7 @@ Train XGboost model to predict future demand. 90 percent of this will also be au
 
 ### Phase 3(Planned)
 
-FAST API backend and Streamlit for dashboard to display future grid demands. 
+FAST API backend and Streamlit for dashboard to display future grid predictions from various trained models. 
 
 ### Grid Data from Jan 2019 to June 2026 listed below: 
 
